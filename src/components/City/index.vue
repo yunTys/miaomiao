@@ -4,80 +4,22 @@
       <div class="city_hot">
         <h2>热门城市</h2>
         <ul class="clearfix">
-          <li>上海</li>
-          <li>北京</li>
-          <li>上海</li>
-          <li>北京</li>
-          <li>上海</li>
-          <li>北京</li>
-          <li>上海</li>
-          <li>北京</li>
+          <li v-for="item in hotCity" :key="item.cityId">{{ item.name }}</li>
         </ul>
       </div>
-      <div class="city_sort">
-        <div>
-          <h2>A</h2>
+      <div class="city_sort" ref="city_sort">
+        <div v-for="data in dataList" :key="data.index">
+          <h2>{{ data.index }}</h2>
           <ul>
-            <li>阿拉善盟</li>
-            <li>鞍山</li>
-            <li>安庆</li>
-            <li>安阳</li>
+            <li v-for="item in data.list" :key="item.cityId">{{ item.name }}</li>
           </ul>
         </div>
-        <div>
-          <h2>B</h2>
-          <ul>
-            <li>北京</li>
-            <li>保定</li>
-            <li>蚌埠</li>
-            <li>包头</li>
-          </ul>
-        </div>
-        <div>
-          <h2>A</h2>
-          <ul>
-            <li>阿拉善盟</li>
-            <li>鞍山</li>
-            <li>安庆</li>
-            <li>安阳</li>
-          </ul>
-        </div>
-        <div>
-          <h2>B</h2>
-          <ul>
-            <li>北京</li>
-            <li>保定</li>
-            <li>蚌埠</li>
-            <li>包头</li>
-          </ul>
-        </div>
-        <div>
-          <h2>A</h2>
-          <ul>
-            <li>阿拉善盟</li>
-            <li>鞍山</li>
-            <li>安庆</li>
-            <li>安阳</li>
-          </ul>
-        </div>
-        <div>
-          <h2>B</h2>
-          <ul>
-            <li>北京</li>
-            <li>保定</li>
-            <li>蚌埠</li>
-            <li>包头</li>
-          </ul>
-        </div>	
+        
       </div>
     </div>
     <div class="city_index">
       <ul>
-        <li>A</li>
-        <li>B</li>
-        <li>C</li>
-        <li>D</li>
-        <li>E</li>
+        <li v-for="(letter, index) in dataList" :key="letter.index" @touchstart="handleToCity(index)">{{ letter.index }}</li>
       </ul>
     </div>
   </div>
@@ -85,7 +27,54 @@
 
 <script>
 export default {
-  name: 'City'
+  name: 'City',
+  data () {
+    return {
+      dataList: [],
+      hotCity: []
+    }
+  },
+  mounted () {
+    this.axios({
+      method: 'get',
+      url: 'https://m.maizuo.com/gateway?k=7076603',
+      headers: {
+        'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"159670442842296837931009"}',
+        'X-Host': 'mall.film-ticket.city.list'
+      }
+    }).then((res) => {
+      var { cityList, hotCities } = this.cityClassify(res.data.data.cities)
+      this.dataList = cityList
+      this.hotCity = hotCities
+    })
+  },
+  methods: {
+    cityClassify (data) {
+      // console.log(data);
+      var hotCities = data.filter((item) => item.isHot === 1)
+      var letterArr = []
+      for(var i = 65; i <= 90; i++){
+        letterArr.push(String.fromCharCode(i))
+      }
+      var cityList = []
+      for(var j = 0; j < letterArr.length; j ++){
+        var arr = data.filter((item) => item.pinyin.substring(0,1).toUpperCase() === letterArr[j])
+        if(arr.length !== 0){
+          cityList.push({
+            'index': letterArr[j],
+            'list': arr
+          });
+        }
+      }
+      return { cityList, hotCities}
+    },
+    
+    handleToCity (index) {
+      var h2 = this.$refs.city_sort.getElementsByTagName('h2')
+      this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop
+      // console.log(this.$refs.city_sort);
+    }
+  }
 }
 </script>
 
@@ -103,5 +92,5 @@ export default {
 .city_body .city_sort h2{ padding-left: 15px; line-height: 30px; font-size: 14px; background:#F0F0F0; font-weight: normal;}
 .city_body .city_sort ul{ padding-left: 10px; margin-top: 10px;}
 .city_body .city_sort ul li{ line-height: 30px; line-height: 30px;}
-.city_body .city_index{ width:20px; display: flex; flex-direction:column; justify-content:center; text-align: center; border-left:1px #e6e6e6 solid;}
+.city_body .city_index{ width:20px; display: flex; flex-direction:column; justify-content:center; text-align: center; border-left:1px #e6e6e6 solid;font-size: 14px;}
 </style>
