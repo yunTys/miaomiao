@@ -11,10 +11,7 @@ Vue.config.productionTip = false
 // 定义多个全局过滤器
 var dfilters = {
   actorToString: function (actorArr) {
-    var newArr = []
-    for(var i = 0; i < actorArr.length; i++){
-      newArr.push(actorArr[i].name)
-    }
+    var newArr = actorArr.map(item => item.name)
     return newArr.join(' ')
   },
   dateFormat: function (time) {
@@ -29,6 +26,10 @@ var dfilters = {
 for(let key in dfilters){
   Vue.filter(key, dfilters[key])
 }
+
+// 注册全局组件
+import Scroller from '@/components/Scroller'
+Vue.component('Scroller', Scroller)
 
 new Vue({
   router,
