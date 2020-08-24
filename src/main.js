@@ -4,6 +4,7 @@ import router from './router'
 import store from './store'
 import axios from 'axios'
 
+
 Vue.prototype.axios = axios
 
 Vue.config.productionTip = false
@@ -11,8 +12,10 @@ Vue.config.productionTip = false
 // 定义多个全局过滤器
 var dfilters = {
   actorToString: function (actorArr) {
-    var newArr = actorArr.map(item => item.name)
-    return newArr.join(' ')
+    if(actorArr){
+      var newArr = actorArr.map(item => item.name)
+      return newArr.join(' ')
+    }
   },
   dateFormat: function (time) {
     var date = new Date(time)
@@ -27,9 +30,13 @@ for(let key in dfilters){
   Vue.filter(key, dfilters[key])
 }
 
-// 注册全局组件
+// 注册全局滚动组件
 import Scroller from '@/components/Scroller'
 Vue.component('Scroller', Scroller)
+
+// loading 组件
+import Loading from '@/components/Loading'
+Vue.component('Loading', Loading)
 
 new Vue({
   router,

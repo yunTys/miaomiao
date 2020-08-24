@@ -1,6 +1,7 @@
 <template>
   <div class="movie_body" ref="movie_body">
-    <Scroller :handleToPullUp="handleToPullUp">
+    <Loading v-if="isLoading" />
+    <Scroller v-else :handleToPullUp="handleToPullUp">
       <ul>
         <li class="loading">{{ loadingMsg }}</li>
         <li v-for="item in movieList" :key="item.filmId">
@@ -28,13 +29,19 @@ export default {
       movieList: [],
       loadingMsg: '',
       current: 1,
-      total: 0
+      total: 0,
+      isLoading: true,
+      prepareId: 0
     }
   },
-  mounted () {
+  activated () {
+    if(this.prepareId == this.$store.state.city.id){
+      return false
+    }
+    // console.log(1111)
     this.axios({
       method: 'get',
-      url: 'https://m.maizuo.com/gateway?cityId=440300&pageNum=1&pageSize=10&type=1&k=8951063',
+      url: `https://m.maizuo.com/gateway?cityId=${this.$store.state.city.id}&pageNum=1&pageSize=10&type=1&k=8951063`,
       headers: {
         'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"159670442842296837931009","bc":"440300"}',
         'X-Host': 'mall.film-ticket.film.list'
@@ -42,34 +49,34 @@ export default {
       }).then((res) => {
       if(res.data.status === 0){
         this.movieList = res.data.data.films
+        this.total = res.data.data.total
+        this.prepareId = this.$store.state.city.id
+        this.isLoading = false
       }
     })
   },
   methods: {
     handleToDetail () {
       // console.log(1)
+      // console.log(this.$store.state.city.id)
     },
-    handleToPullUp (pos) {
-      /* if(pos.y > 30){
-        // 请求数据成功后，显示完成
-        this.current ++
-        this.axios({
-          method: 'get',
-          url: `https://m.maizuo.com/gateway?cityId=440300&pageNum=${this.current}&pageSize=10&type=1&k=8951063`,
-          headers: {
-            'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"159670442842296837931009","bc":"440300"}',
-            'X-Host': 'mall.film-ticket.film.list'
-          }
-        }).then((res) => {
-          if(res.data.status === 0){
-            this.movieList = res.data.data.films
-            this.loadingMsg = '加载完成'
-            this.$nextTick(() => {
-              this.loadingMsg = ''
-            })
-          }
-        })
-      } */
+    handleToPullUp () {
+      if(this.total === this.movieList.length){
+        return false;
+      }
+      this.current ++
+      this.axios({
+        method: 'get',
+        url: `https://m.maizuo.com/gateway?cityId=440300&pageNum=${this.current}&pageSize=10&type=1&k=8951063`,
+        headers: {
+          'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"159670442842296837931009","bc":"440300"}',
+          'X-Host': 'mall.film-ticket.film.list'
+        }
+      }).then((res) => {
+        if(res.data.status === 0){
+          this.movieList = [...this.movieList,...res.data.data.films]
+        }
+      })
     }
   }
 }

@@ -20,13 +20,24 @@ export default {
       probeType: 1,
       pullUpLoad: {
         threshold: 0
+      },
+      scrollBar: {
+        fade: false
       }
     })
-    bscroll.on('pullingUp', (pos) => {
-      this.handleToPullUp(pos)
-      console.log(1)
+
+    this.scroll = bscroll
+
+    bscroll.on('pullingUp', () => {
+      this.handleToPullUp()
+      // console.log(1)
       bscroll.finishPullUp()
     })
+  },
+  methods: {
+    toScrollTop (y) {
+      this.scroll.scrollTo(0,y)
+    }
   }
 }
 </script>
