@@ -1,21 +1,24 @@
 <template>
   <div class="city_body">
     <div class="city_list">
-      <div class="city_hot">
-        <h2>热门城市</h2>
-        <ul class="clearfix">
-          <li v-for="item in hotCity" :key="item.cityId">{{ item.name }}</li>
-        </ul>
-      </div>
-      <div class="city_sort" ref="city_sort">
-        <div v-for="data in dataList" :key="data.index">
-          <h2>{{ data.index }}</h2>
-          <ul>
-            <li v-for="item in data.list" :key="item.cityId">{{ item.name }}</li>
-          </ul>
+      <Scroller ref="city_list">
+        <div class="city_before">
+          <div class="city_hot">
+            <h2>热门城市</h2>
+            <ul class="clearfix">
+              <li v-for="item in hotCity" :key="item.cityId" @tap="handleCheckoutCity(item.name,item.cityId)">{{ item.name }}</li>
+            </ul>
+          </div>
+          <div class="city_sort" ref="city_sort">
+            <div v-for="data in dataList" :key="data.index">
+              <h2>{{ data.index }}</h2>
+              <ul>
+                <li v-for="item in data.list" :key="item.cityId" @tap="handleCheckoutCity(item.name,item.cityId)">{{ item.name }}</li>
+              </ul>
+            </div>
+          </div>
         </div>
-        
-      </div>
+      </Scroller>
     </div>
     <div class="city_index">
       <ul>
@@ -71,8 +74,14 @@ export default {
     
     handleToCity (index) {
       var h2 = this.$refs.city_sort.getElementsByTagName('h2')
-      this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop
-      // console.log(this.$refs.city_sort);
+      // this.$refs.city_sort.parentNode.scrollTop = h2[index].offsetTop
+      this.$refs.city_list.toScrollTop(-h2[index].offsetTop)
+    },
+    handleCheckoutCity (name, id) {
+      this.$store.commit('city/checkoutCity', {name,id})
+      window.localStorage.setItem('nowName', name)
+      window.localStorage.setItem('nowId', id)
+      this.$router.push('/')
     }
   }
 }
@@ -93,4 +102,5 @@ export default {
 .city_body .city_sort ul{ padding-left: 10px; margin-top: 10px;}
 .city_body .city_sort ul li{ line-height: 30px; line-height: 30px;}
 .city_body .city_index{ width:20px; display: flex; flex-direction:column; justify-content:center; text-align: center; border-left:1px #e6e6e6 solid;font-size: 14px;}
+.city_body .city_before:before{ content: '';display: table; }
 </style>

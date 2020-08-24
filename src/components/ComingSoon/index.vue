@@ -1,19 +1,22 @@
 <template>
   <div class="movie_body">
-    <ul>
-      <li v-for="item in dataList" :key="item.filmId">
-        <div class="pic_show"><img :src="item.poster"></div>
-        <div class="info_list">
-          <h2>{{ item.name }} <img src="@/assets/maxs.png" v-if="item.item.type === 2" /></h2>
-          <p>主演: {{ item.actors | actorToString }}</p>
-          <p>{{ item.nation }} | {{ item.runtime }}分钟</p>
-          <p>{{ item.premiereAt*1000 | dateFormat }}上映</p>
-        </div>
-        <div class="btn_pre">
-          预售
-        </div>
-      </li>
-    </ul>
+    <Loading v-if="isLoading" />
+    <Scroller v-else>
+      <ul>
+        <li v-for="item in dataList" :key="item.filmId">
+          <div class="pic_show"><img :src="item.poster"></div>
+          <div class="info_list">
+            <h2>{{ item.name }} <img src="@/assets/maxs.png" v-if="item.item.type === 2" /></h2>
+            <p>主演: {{ item.actors | actorToString }}</p>
+            <p>{{ item.nation }} | {{ item.runtime }}分钟</p>
+            <p>{{ item.premiereAt*1000 | dateFormat }}上映</p>
+          </div>
+          <div class="btn_pre">
+            预售
+          </div>
+        </li>
+      </ul>
+    </Scroller>
   </div>
 </template>
 
@@ -22,12 +25,17 @@ export default {
   name: 'ComingSoon',
   data () {
     return {
-      dataList: []
+      dataList: [],
+      isLoading: true,
+      prepareId: 0
     }
   },
-  mounted () {
+  activated () {
+    if(this.prepareId == this.$store.state.city.id){
+      return false
+    }
     this.axios({
-      url: 'https://m.maizuo.com/gateway?cityId=440300&pageNum=1&pageSize=10&type=2&k=7641093',
+      url: `https://m.maizuo.com/gateway?cityId=${this.$store.state.city.id}&pageNum=1&pageSize=10&type=2&k=7641093`,
       headers: {
         'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"159670442842296837931009","bc":"440300"}',
         'X-Host': 'mall.film-ticket.film.list'
@@ -35,6 +43,8 @@ export default {
     }).then((res) => {
       if(res.data.status === 0){
         this.dataList = res.data.data.films
+        this.prepareId == this.$store.state.city.id
+        this.isLoading = false
       }
     })
   }

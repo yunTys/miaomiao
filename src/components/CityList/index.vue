@@ -1,6 +1,7 @@
 <template>
   <div class="cinema_body">
-    <ul>
+    <Loading v-if="isLoading" />
+    <ul v-else>
       <li v-for="item in dataList" :key="item.cinemaId">
         <div class="name-price">
           <span>{{ item.name }}</span>
@@ -20,12 +21,17 @@ export default {
   name: 'CityList',
   data () {
     return {
-      dataList: []
+      dataList: [],
+      isLoading: true,
+      prepareId: 0
     }
   },
-  mounted () {
+  activated () {
+    if(this.prepareId == this.$store.state.city.id){
+      return false
+    }
     this.axios({
-      url: 'https://m.maizuo.com/gateway?cityId=440300&ticketFlag=1&k=6775958',
+      url: `https://m.maizuo.com/gateway?cityId=${this.$store.state.city.id}&ticketFlag=1&k=6775958`,
       headers: {
         'X-Client-Info': '{"a":"3000","ch":"1002","v":"5.0.4","e":"159670442842296837931009","bc":"440300"}',
         'X-Host': 'mall.film-ticket.cinema.list'
@@ -33,6 +39,8 @@ export default {
     }).then((res) => {
       if(res.data.status === 0){
         this.dataList = res.data.data.cinemas
+        this.prepareId == this.$store.state.city.id
+        this.isLoading = false
       }
     })
   }
