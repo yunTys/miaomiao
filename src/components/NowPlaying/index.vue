@@ -5,9 +5,9 @@
       <ul>
         <li class="loading">{{ loadingMsg }}</li>
         <li v-for="item in movieList" :key="item.filmId">
-          <div class="pic_show"><img :src="item.poster" @tap="handleToDetail"></div>
+          <div class="pic_show"><img :src="item.poster" @tap="handleToDetail(item.filmId)"></div>
           <div class="info_list">
-            <h2>{{ item.name }} <img src="@/assets/maxs.png" v-if="item.item.type === 2" /></h2>
+            <h2 @tap="handleToDetail(item.filmId)">{{ item.name }} <img src="@/assets/maxs.png" v-if="item.item.type === 2" /></h2>
             <p>观众评 <span class="grade">{{ item.grade ? item.grade : 0 }}</span></p>
             <p>主演: {{ item.actors | actorToString }}</p>
             <p>{{ item.nation }} | {{ item.runtime }}分钟</p>
@@ -56,9 +56,8 @@ export default {
     })
   },
   methods: {
-    handleToDetail () {
-      // console.log(1)
-      // console.log(this.$store.state.city.id)
+    handleToDetail (filmId) {
+      this.$router.push('/movie/detail/1/' + filmId)
     },
     handleToPullUp () {
       if(this.total === this.movieList.length){
