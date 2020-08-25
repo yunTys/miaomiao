@@ -18,6 +18,7 @@
         <router-view/>
       </keep-alive>
     </div>
+    <router-view name="detail" />
     <Tabbar />
   </div>
 </template>

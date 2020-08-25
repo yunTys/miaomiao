@@ -4,9 +4,9 @@
     <Scroller v-else>
       <ul>
         <li v-for="item in dataList" :key="item.filmId">
-          <div class="pic_show"><img :src="item.poster"></div>
+          <div class="pic_show"><img :src="item.poster" @tap="handleToDetail(item.filmId)"></div>
           <div class="info_list">
-            <h2>{{ item.name }} <img src="@/assets/maxs.png" v-if="item.item.type === 2" /></h2>
+            <h2 @tap="handleToDetail(item.filmId)">{{ item.name }} <img src="@/assets/maxs.png" v-if="item.item.type === 2" /></h2>
             <p>主演: {{ item.actors | actorToString }}</p>
             <p>{{ item.nation }} | {{ item.runtime }}分钟</p>
             <p>{{ item.premiereAt*1000 | dateFormat }}上映</p>
@@ -28,6 +28,12 @@ export default {
       dataList: [],
       isLoading: true,
       prepareId: 0
+    }
+  },
+  methods: {
+    handleToDetail (filmId) {
+      // console.log(2)
+      this.$router.push('/movie/detail/2/' + filmId)
     }
   },
   activated () {
